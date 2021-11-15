@@ -182,5 +182,7 @@ def trace_exit(current_frame: Optional[FrameType], ret: Any) -> None:
 
     func_name, func_args, file_name, line_no = __trace(current_frame)
 
-    logger.info('(%s:%s) Exiting "%s" ret: %s',
-            file_name, line_no, func_name, ret)
+    logger.info(
+        '(%s:%s) Exiting "%s" ret: %s',
+        file_name, line_no, func_name, ret
+    )
