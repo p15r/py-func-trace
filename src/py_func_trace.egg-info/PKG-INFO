@@ -1,0 +1,25 @@
+Metadata-Version: 2.1
+Name: py-func-trace
+Version: 0.1.0
+Summary: A small lib to trace function entries & exists
+Home-page: https://github.com/p15r/py-func-trace
+Author: pat
+Author-email: pat@p15r.net
+License: UNKNOWN
+Project-URL: Bug Tracker, https://github.com/p15r/py-func-trace/issues
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# py_func_trace
+Readme. To be done.
+
+## Packaging
+- `python3 -m pip install --upgrade build`
+- ``
+
+
