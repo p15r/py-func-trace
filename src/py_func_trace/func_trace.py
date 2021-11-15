@@ -93,7 +93,7 @@ def __camouflage(func_args: ArgInfo, effective_args: List) -> Dict:
     for arg in effective_args:
         if arg not in func_args.locals:
             # The value of an argument might not exist anymore if the variable
-            # has been explicitely deleted within the function (eg. "del var").
+            # has been explicitly deleted within the function (eg. "del var").
             arguments_and_values[arg] = '<MISSING>'
             continue
         if arg.startswith('priv_'):
