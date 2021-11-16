@@ -10,6 +10,10 @@ variables are prefixed with `priv_`.
   import inspect
   from py_func_trace import func_trace
 
+  # for demo purposes:
+  import sys
+  logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
   func_trace.trace_enter(inspect.currentframe())
   ```
 
