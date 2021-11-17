@@ -11,6 +11,7 @@ variables are prefixed with `priv_`.
   from py_func_trace import func_trace
 
   # for demo purposes:
+  import logging
   import sys
   logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
