@@ -16,7 +16,9 @@ NESTED_DICT_DEPTH_MAX = 15
 
 
 def __get_dict_keypaths(
-        a_dict: dict, current_path: str = '', depth: int = 0
+    a_dict: dict,
+    current_path: str = '',
+    depth: int = 0
 ) -> list:
     """Generates list of keypaths of a dict, max. dict nested depth is 15."""
 
@@ -27,7 +29,7 @@ def __get_dict_keypaths(
         return []
     depth += 1
 
-    keypaths: List[str] = list()
+    keypaths: List[str] = []
     for key, value in a_dict.items():
         if isinstance(value, dict):
             new_keypaths = __get_dict_keypaths(
@@ -42,7 +44,7 @@ def __get_dict_keypaths(
 
 
 def __camouflage_nested_dict(args_and_values: dict, keypaths: List[str]):
-    # example keypath: "path.to.priv_key.subkey"
+    # "path.to.priv_key.subkey"
     for keypath in keypaths:
         # "priv_key.subkey"
         if (pos_start := keypath.find('priv_')) != -1:
@@ -88,7 +90,7 @@ def __camouflage(func_args: ArgInfo, effective_args: List) -> Dict:
     deepcopy() doesn't work if an argument is an open file descriptor.
     """
 
-    arguments_and_values: Dict[Any, Any] = dict()
+    arguments_and_values: Dict[Any, Any] = {}
 
     for arg in effective_args:
         if arg not in func_args.locals:
@@ -127,7 +129,7 @@ def __extract_arguments(func_args: ArgInfo) -> Dict:
     argument name as key and argument value as value.
     """
 
-    effective_args = list()
+    effective_args = []
 
     if func_args.args:
         effective_args.extend(func_args.args)
@@ -168,7 +170,7 @@ def __trace(current_frame: Optional[FrameType]) -> tuple:
     return func_name, filtered_func_args, file_name, line_no
 
 
-def trace_enter(current_frame: Optional[FrameType]) -> None:
+def enter(current_frame: Optional[FrameType]) -> None:
     """Traces execution flow when entering a function/method."""
 
     func_name, func_args, file_name, line_no = __trace(current_frame)
@@ -177,10 +179,10 @@ def trace_enter(current_frame: Optional[FrameType]) -> None:
                 file_name, line_no, func_name, func_args)
 
 
-def trace_exit(current_frame: Optional[FrameType], ret: Any) -> None:
+def leave(current_frame: Optional[FrameType], ret: Any) -> None:
     """Traces execution flow when exiting a function/method."""
 
-    func_name, func_args, file_name, line_no = __trace(current_frame)
+    func_name, _, file_name, line_no = __trace(current_frame)
 
     logger.info(
         '(%s:%s) Exiting "%s" ret: %s',
