@@ -12,7 +12,21 @@ import glom
 
 logger = logging.getLogger(__name__)
 CAMOUFLAGE_SIGN = '******'
+SHORTEN_SIGN = '...'
+SHORTEN_MAX_LENGTH = 80
 NESTED_DICT_DEPTH_MAX = 15
+
+
+def __shorten_values(value: str) -> str:
+    """
+    Shortens string values by replacing everything after SHORTEN_MAX_LENGTH
+    with SHORTEN_SIGN.
+    """
+    if len(value) > SHORTEN_MAX_LENGTH:
+        ret = value[:SHORTEN_MAX_LENGTH]
+        ret = ret + SHORTEN_SIGN
+
+        return ret
 
 
 def __get_dict_keypaths(
@@ -76,6 +90,15 @@ def __camouflage_nested_dict(args_and_values: dict, keypaths: List[str]):
                 # Keep sensitive value in log instead of aborting
                 # logging.
                 continue
+        else:
+            value = glom.glom(args_and_values, keypath)
+            if len(value) > SHORTEN_MAX_LENGTH:
+                shortened_value = __shorten_values(value)
+                glom.assign(
+                    args_and_values,
+                    keypath,
+                    shortened_value
+                )
 
 
 def __camouflage(func_args: ArgInfo, effective_args: List) -> Dict:
@@ -118,7 +141,11 @@ def __camouflage(func_args: ArgInfo, effective_args: List) -> Dict:
 
             continue
 
-        arguments_and_values[arg] = func_args.locals[arg]
+        argument = func_args.locals[arg]
+        if len(argument) > SHORTEN_MAX_LENGTH:
+            argument = __shorten_values(argument)
+
+        arguments_and_values[arg] = argument
 
     return arguments_and_values
 
