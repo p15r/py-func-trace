@@ -28,6 +28,8 @@ def __shorten_values(value: str) -> str:
 
         return ret
 
+    return ''
+
 
 def __get_dict_keypaths(
     a_dict: dict,
