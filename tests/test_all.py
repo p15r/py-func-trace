@@ -60,8 +60,6 @@ class TestAll(TestCase):
         logger = logging.getLogger("py_func_trace.func_trace")
         with mock.patch.object(logger, 'info') as mock_info:
             self.fixture_func(5, "b", 123, {"foo": "s", "priv_bar": "secret"})
-            print(dir(mock_info))
-            print(mock_info.mock_calls[1].__str__())
             mock_info.assert_called()
             self.assertEqual(
                 expected_output[0],
@@ -70,4 +68,24 @@ class TestAll(TestCase):
             self.assertEqual(
                 expected_output[1],
                 mock_info.mock_calls[1].__str__()
+            )
+
+    def test___shorten_string(self):
+        """Test string shortening"""
+        shortened_string = 77 * 'b' + '...'
+        expected_output = ("call('(%s:%s) Entering \"%s\" args: %s', "
+                           "'test_all.py', 17, 'fixture_func', {'i': 5, "
+                           f"'a_string': '{shortened_string}', 'priv_foo': "
+                           "'******', "
+                           "'dic': {'foo': 's', 'priv_bar': '******'}})")
+
+        logger = logging.getLogger("py_func_trace.func_trace")
+        with mock.patch.object(logger, 'info') as mock_info:
+            self.fixture_func(
+                5, 85 * "b", 123, {"foo": "s", "priv_bar": "secret"}
+            )
+            mock_info.assert_called()
+            self.assertEqual(
+                expected_output,
+                mock_info.mock_calls[0].__str__()
             )
