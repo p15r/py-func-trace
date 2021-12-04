@@ -15,8 +15,9 @@ variables are prefixed with `priv_`.
   import sys
   logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-  func_trace.trace_enter(inspect.currentframe())
+  func_trace.enter(inspect.currentframe())
   ```
+- Run tests: `python3 setup.py test`
 
 ## Packaging
 - Install build tool: `python3 -m pip install --upgrade build`

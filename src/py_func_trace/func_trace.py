@@ -1,4 +1,9 @@
-"""Provides functionality to trace execution flow of distributey."""
+"""
+Provides functionality to trace execution flow of distributey.
+
+By default, strings are shortened before logging. This option can be disabled:
+`func_trace.SHORTEN_ENABLED = False`
+"""
 
 import copy
 import os
@@ -12,7 +17,33 @@ import glom
 
 logger = logging.getLogger(__name__)
 CAMOUFLAGE_SIGN = '******'
+SHORTEN_ENABLED = True
+SHORTEN_SIGN = '...'
+SHORTEN_MAX_LENGTH = 80
 NESTED_DICT_DEPTH_MAX = 15
+
+
+def __shorten_string(value: Any) -> Any:
+    """
+    Shortens a string to SHORTEN_MAX_LENGTH. The ending characters are the
+    SHORTEN_SIGN.
+    If input is not a string or shorter than SHORTEN_MAX_LENGTH, the
+    input value equals return value.
+    """
+
+    if not SHORTEN_ENABLED:
+        return value
+
+    if not isinstance(value, str):
+        return value
+
+    if len(value) <= SHORTEN_MAX_LENGTH:
+        return value
+
+    ret = value[:SHORTEN_MAX_LENGTH-len(SHORTEN_SIGN)]
+    ret = ret + SHORTEN_SIGN
+
+    return ret
 
 
 def __get_dict_keypaths(
@@ -76,6 +107,10 @@ def __camouflage_nested_dict(args_and_values: dict, keypaths: List[str]):
                 # Keep sensitive value in log instead of aborting
                 # logging.
                 continue
+        else:
+            value = glom.glom(args_and_values, keypath)
+            value = __shorten_string(value)
+            glom.assign(args_and_values, keypath, value)
 
 
 def __camouflage(func_args: ArgInfo, effective_args: List) -> Dict:
@@ -118,7 +153,9 @@ def __camouflage(func_args: ArgInfo, effective_args: List) -> Dict:
 
             continue
 
-        arguments_and_values[arg] = func_args.locals[arg]
+        argument = func_args.locals[arg]
+        argument = __shorten_string(argument)
+        arguments_and_values[arg] = argument
 
     return arguments_and_values
 
