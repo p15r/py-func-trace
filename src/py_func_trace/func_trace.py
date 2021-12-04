@@ -1,4 +1,9 @@
-"""Provides functionality to trace execution flow of distributey."""
+"""
+Provides functionality to trace execution flow of distributey.
+
+By default, strings are shortened before logging. This option can be disabled:
+`func_trace.SHORTEN_ENABLED = False`
+"""
 
 import copy
 import os
@@ -12,6 +17,7 @@ import glom
 
 logger = logging.getLogger(__name__)
 CAMOUFLAGE_SIGN = '******'
+SHORTEN_ENABLED = True
 SHORTEN_SIGN = '...'
 SHORTEN_MAX_LENGTH = 80
 NESTED_DICT_DEPTH_MAX = 15
@@ -24,6 +30,9 @@ def __shorten_string(value: Any) -> Any:
     If input is not a string or shorter than SHORTEN_MAX_LENGTH, the
     input value equals return value.
     """
+
+    if not SHORTEN_ENABLED:
+        return value
 
     if not isinstance(value, str):
         return value
