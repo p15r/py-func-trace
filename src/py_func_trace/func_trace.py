@@ -1,8 +1,8 @@
 """
-Provides functionality to trace execution flow of distributey.
+Provides functions to log function call arguments and return values.
 
-By default, strings are shortened before logging. This option can be disabled:
-`func_trace.SHORTEN_ENABLED = False`
+By default, large strings are shortened before logging.
+This behavior can be configured: `func_trace.SHORTEN_ENABLED = False`
 """
 
 import copy
@@ -25,8 +25,8 @@ NESTED_DICT_DEPTH_MAX = 15
 
 def __shorten_string(value: Any) -> Any:
     """
-    Shortens a string to SHORTEN_MAX_LENGTH. The ending characters are the
-    SHORTEN_SIGN.
+    Shortens a string to SHORTEN_MAX_LENGTH. To signalize the shortening of a
+    string, SHORTEN_SIGN is appended to the shortened string.
     If input is not a string or shorter than SHORTEN_MAX_LENGTH, the
     input value equals return value.
     """
@@ -51,7 +51,10 @@ def __get_dict_keypaths(
     current_path: str = '',
     depth: int = 0
 ) -> list:
-    """Generates list of keypaths of a dict, max. dict nested depth is 15."""
+    """
+    Generates list of keypaths of dictionary values.
+    The maximum depth of nested dictionaries is configurable.
+    """
 
     if depth > NESTED_DICT_DEPTH_MAX:
         logger.critical(
@@ -104,8 +107,8 @@ def __camouflage_nested_dict(args_and_values: dict, keypaths: List[str]):
                     'Exception: "%s"', keypath, exc
                 )
 
-                # Keep sensitive value in log instead of aborting
-                # logging.
+                # Note:
+                # Keep sensitive value in log instead of aborting logging.
                 continue
         else:
             value = glom.glom(args_and_values, keypath)
@@ -129,7 +132,7 @@ def __camouflage(func_args: ArgInfo, effective_args: List) -> Dict:
 
     for arg in effective_args:
         if arg not in func_args.locals:
-            # The value of an argument might not exist anymore if the variable
+            # the value of an argument might not exist anymore if the variable
             # has been explicitly deleted within the function (eg. "del var").
             arguments_and_values[arg] = '<MISSING>'
             continue
@@ -141,7 +144,7 @@ def __camouflage(func_args: ArgInfo, effective_args: List) -> Dict:
         if isinstance(func_args.locals[arg], dict):
             # arg is a dict, let's check for keys marked as private as well
 
-            # Copy all arguments (also sensitive values) and camouflage them
+            # copy all arguments (also sensitive values) and camouflage them
             # afterwards. If original data is not copied, its data
             # structure, that might contains many nested dicts, must be
             # reproduced, which is unnecessary complex.
@@ -162,7 +165,7 @@ def __camouflage(func_args: ArgInfo, effective_args: List) -> Dict:
 
 def __extract_arguments(func_args: ArgInfo) -> Dict:
     """
-    Extracts a function's arguments and returns dict with
+    Extracts a function's arguments and returns a dict with
     argument name as key and argument value as value.
     """
 
@@ -191,7 +194,7 @@ def __extract_arguments(func_args: ArgInfo) -> Dict:
 def __trace(current_frame: Optional[FrameType]) -> tuple:
     if isinstance(current_frame, FrameType):
         func_name = current_frame.f_code.co_name
-        # getargvalues is deprecated, use inspect.signature() instead
+        # TODO: getargvalues is deprecated, use inspect.signature() instead
         func_args = inspect.getargvalues(current_frame)
         file_path = current_frame.f_code.co_filename
         file_name = os.path.basename(file_path)
@@ -208,7 +211,7 @@ def __trace(current_frame: Optional[FrameType]) -> tuple:
 
 
 def enter(current_frame: Optional[FrameType]) -> None:
-    """Traces execution flow when entering a function/method."""
+    """Logs function arguments of called function/method."""
 
     func_name, func_args, file_name, line_no = __trace(current_frame)
 
@@ -217,7 +220,7 @@ def enter(current_frame: Optional[FrameType]) -> None:
 
 
 def leave(current_frame: Optional[FrameType], ret: Any) -> None:
-    """Traces execution flow when exiting a function/method."""
+    """Logs return values of function/method that is about to exit."""
 
     func_name, _, file_name, line_no = __trace(current_frame)
 
