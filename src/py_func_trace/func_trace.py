@@ -107,8 +107,8 @@ def __camouflage_nested_dict(args_and_values: dict, keypaths: List[str]):
                     'Exception: "%s"', keypath, exc
                 )
 
-                # Keep sensitive value in log instead of aborting
-                # logging.
+                # Note:
+                # Keep sensitive value in log instead of aborting logging.
                 continue
         else:
             value = glom.glom(args_and_values, keypath)
@@ -132,7 +132,7 @@ def __camouflage(func_args: ArgInfo, effective_args: List) -> Dict:
 
     for arg in effective_args:
         if arg not in func_args.locals:
-            # The value of an argument might not exist anymore if the variable
+            # the value of an argument might not exist anymore if the variable
             # has been explicitly deleted within the function (eg. "del var").
             arguments_and_values[arg] = '<MISSING>'
             continue
@@ -144,7 +144,7 @@ def __camouflage(func_args: ArgInfo, effective_args: List) -> Dict:
         if isinstance(func_args.locals[arg], dict):
             # arg is a dict, let's check for keys marked as private as well
 
-            # Copy all arguments (also sensitive values) and camouflage them
+            # copy all arguments (also sensitive values) and camouflage them
             # afterwards. If original data is not copied, its data
             # structure, that might contains many nested dicts, must be
             # reproduced, which is unnecessary complex.
@@ -194,7 +194,7 @@ def __extract_arguments(func_args: ArgInfo) -> Dict:
 def __trace(current_frame: Optional[FrameType]) -> tuple:
     if isinstance(current_frame, FrameType):
         func_name = current_frame.f_code.co_name
-        # getargvalues is deprecated, use inspect.signature() instead
+        # TODO: getargvalues is deprecated, use inspect.signature() instead
         func_args = inspect.getargvalues(current_frame)
         file_path = current_frame.f_code.co_filename
         file_name = os.path.basename(file_path)
