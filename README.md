@@ -1,30 +1,42 @@
 # py_func_trace
-Python package `py_func_trace` provides functions to log when a function
-starts executing and before it exits. The log information includes
-function parameters and return values. Sensitive values are camouflaged if
-variables are prefixed with `priv_`.
-
-- Install: `python3 -m pip install dist/py_func_trace-0.1.0-py3-none-any.whl`
-- Use:
-  ```python
-  import inspect
-  from py_func_trace import func_trace
-
-  # for demo purposes:
-  import logging
-  import sys
-  logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-
-  func_trace.enter(inspect.currentframe())
-  ```
-- Run tests: `python3 setup.py test`
+`py_func_trace` is a Python Pip package that provides functions to log
+arguments and return values when a function is called, or exits, respectively.
+Sensitive arguments are camouflaged if variable names are prefixed with
+`priv_`.
 
 ## Packaging
 - Install build tool: `python3 -m pip install --upgrade build`
-- Create build: `python3 -m build`
+- Create build: `cd py_func_trace && python3 -m build`
 - Artefacts:
   ```bash
   ls dist/
   py_func_trace-0.1.0-py3-none-any.whl  # build distribution
   py_func_trace-0.1.0.tar.gz            # source archive
   ```
+
+## Usage
+- Install: `python3 -m pip install dist/py_func_trace-0.1.0-py3-none-any.whl`
+- Use:
+  ```python
+  import inspect
+  from py_func_trace import func_trace
+
+  import logging
+  import sys
+  logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
+  def test(a: str, priv_b: str) -> str:
+      func_trace.enter(inspect.currentframe())
+      ret = "return value"
+      func_trace.leave(inspect.currentframe(), ret)
+      return ret
+
+  test("arg1", "arg2_sensitive")
+
+  """
+  Output:
+  INFO:py_func_trace.func_trace:(t.py:8) Entering "test" args: {'a': 'arg1', 'priv_b': '******'}
+  INFO:py_func_trace.func_trace:(t.py:8) Exiting "test" ret: return value
+  """
+  ```
+- Run tests: `python3 setup.py test`
